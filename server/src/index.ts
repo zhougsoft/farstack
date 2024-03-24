@@ -5,18 +5,14 @@ import {
 } from '@farcaster/auth-client'
 import cors from 'cors'
 import dotenv from 'dotenv'
-import express, {
-  type NextFunction,
-  type Request,
-  type Response,
-} from 'express'
-import jwt, { type VerifyErrors } from 'jsonwebtoken'
+import express from 'express'
+import jwt from 'jsonwebtoken'
 import { validateFarcasterSignature } from './lib'
-
-const PORT = 6969
+import { authenticateToken } from './middleware'
 
 dotenv.config()
-const { JWT_SECRET } = process.env
+const { PORT, JWT_SECRET } = process.env
+if (!PORT) throw new Error('missing PORT in .env file')
 if (!JWT_SECRET) throw new Error('missing JWT_SECRET in .env file')
 
 const farcasterClient = createAppClient({ ethereum: viemConnector() })
@@ -24,45 +20,6 @@ const farcasterClient = createAppClient({ ethereum: viemConnector() })
 const app = express()
 app.use(express.json())
 app.use(cors())
-
-const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const authHeader = req.headers['authorization']
-    if (!authHeader) {
-      return res.status(403).json({ error: 'missing authorization header' })
-    }
-
-    if (!authHeader.startsWith('Bearer ')) {
-      return res.status(403).json({
-        error:
-          "invalid authorization header; expected format: 'Authorization: Bearer [TOKEN]'",
-      })
-    }
-
-    const token = authHeader && authHeader.split(' ')[1] // Authorization: Bearer [TOKEN]
-    if (!token) {
-      return res.status(403).json({ error: 'missing authorization token' })
-    }
-
-    jwt.verify(token, JWT_SECRET, (error: VerifyErrors, payload: Request) => {
-      if (error) {
-        return res.status(403).json({ error: 'token is invalid or expired' })
-      }
-
-      // ~~ add any req'd user validation here ~~
-      if (!payload.user) {
-        return res.status(401).json({ error: 'invalid user' })
-      }
-
-      // attach user payload to the request & proceed on
-      req.user = payload.user
-      next()
-    })
-  } catch (error) {
-    console.error('auth middleware error:', error)
-    return res.status(500).json({ error: 'internal server error' })
-  }
-}
 
 app.post('/auth', async (req, res) => {
   try {
