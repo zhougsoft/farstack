@@ -890,14 +890,14 @@
   resolved "https://registry.yarnpkg.com/@types/range-parser/-/range-parser-1.2.7.tgz#50ae4353eaaddc04044279812f52c8c65857dbcb"
   integrity sha512-hKormJbkJqzQGhziax5PItDUTMAM9uE2XXQmM37dyd4hVM+5aVl7oVxMVUiVQn2oCQFN/LKCZdvSM0pFRqbSmQ==
 
-"@types/react-dom@^18.2.19":
+"@types/react-dom@^18.2.22":
   version "18.2.22"
   resolved "https://registry.yarnpkg.com/@types/react-dom/-/react-dom-18.2.22.tgz#d332febf0815403de6da8a97e5fe282cbe609bae"
   integrity sha512-fHkBXPeNtfvri6gdsMYyW+dW7RXFo6Ad09nLFK0VQWR7yGLai/Cyvyj696gbwYvBnhGtevUG9cET0pmUbMtoPQ==
   dependencies:
     "@types/react" "*"
 
-"@types/react@*", "@types/react@^18.2.56":
+"@types/react@*", "@types/react@^18.2.69":
   version "18.2.69"
   resolved "https://registry.yarnpkg.com/@types/react/-/react-18.2.69.tgz#313ec21891b22bb7646a54cb4bdb8cddb0880271"
   integrity sha512-W1HOMUWY/1Yyw0ba5TkCV+oqynRjG7BnteBB+B7JmAK7iw3l2SW+VGOxL+akPweix6jk2NNJtyJKpn4TkpfK3Q==
@@ -933,7 +933,7 @@
     "@types/mime" "*"
     "@types/node" "*"
 
-"@typescript-eslint/eslint-plugin@^7.0.2":
+"@typescript-eslint/eslint-plugin@^7.3.1":
   version "7.3.1"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/eslint-plugin/-/eslint-plugin-7.3.1.tgz#0d8f38a6c8a1802139e62184ee7a68ed024f30a1"
   integrity sha512-STEDMVQGww5lhCuNXVSQfbfuNII5E08QWkvAw5Qwf+bj2WT+JkG1uc+5/vXA3AOYMDHVOSpL+9rcbEUiHIm2dw==
@@ -950,7 +950,7 @@
     semver "^7.5.4"
     ts-api-utils "^1.0.1"
 
-"@typescript-eslint/parser@^7.0.2":
+"@typescript-eslint/parser@^7.3.1":
   version "7.3.1"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/parser/-/parser-7.3.1.tgz#c4ba7dc2744318a5e4506596cbc3a0086255c526"
   integrity sha512-Rq49+pq7viTRCH48XAbTA+wdLRrB/3sRq4Lpk0oGDm0VmnjBrAOVXH/Laalmwsv2VpekiEfVFwJYVk6/e8uvQw==
@@ -1830,7 +1830,7 @@ eslint-plugin-react-hooks@^4.6.0:
   resolved "https://registry.yarnpkg.com/eslint-plugin-react-hooks/-/eslint-plugin-react-hooks-4.6.0.tgz#4c3e697ad95b77e93f8646aaa1630c1ba607edd3"
   integrity sha512-oFc7Itz9Qxh2x4gNHStv3BqJq54ExXmfC+a1NjAta66IAN87Wu0R/QArgIS9qKzX3dXKPI9H5crl9QchNMY9+g==
 
-eslint-plugin-react-refresh@^0.4.5:
+eslint-plugin-react-refresh@^0.4.6:
   version "0.4.6"
   resolved "https://registry.yarnpkg.com/eslint-plugin-react-refresh/-/eslint-plugin-react-refresh-0.4.6.tgz#e8e8accab681861baed00c5c12da70267db0936f"
   integrity sha512-NjGXdm7zgcKRkKMua34qVO9doI7VOxZ6ancSvBELJSSoX97jyndXcSoa8XBh69JoB31dNz3EEzlMcizZl7LaMA==
@@ -1848,7 +1848,7 @@ eslint-visitor-keys@^3.3.0, eslint-visitor-keys@^3.4.1, eslint-visitor-keys@^3.4
   resolved "https://registry.yarnpkg.com/eslint-visitor-keys/-/eslint-visitor-keys-3.4.3.tgz#0cd72fe8550e3c2eae156a96a4dddcd1c8ac5800"
   integrity sha512-wpc+LXeiyiisxPlEkUzU6svyS1frIO3Mgxj1fdy7Pm8Ygzguax2N3Fa/D/ag1WqbOprdI+uY6wMUl8/a2G+iag==
 
-eslint@^8.56.0:
+eslint@^8.57.0:
   version "8.57.0"
   resolved "https://registry.yarnpkg.com/eslint/-/eslint-8.57.0.tgz#c786a6fd0e0b68941aaf624596fb987089195668"
   integrity sha512-dZ6+mexnaTIbSBZWgou51U6OmzIhYM2VcNdtiTtI7qPNZm35Akpr0f6vtw3w1Kmn5PYo+tZVfh13WrhpS6oLqQ==
@@ -3635,7 +3635,7 @@ type-is@~1.6.18:
     media-typer "0.3.0"
     mime-types "~2.1.24"
 
-typescript@^5.2.2, typescript@^5.4.3:
+typescript@^5.4.3:
   version "5.4.3"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.4.3.tgz#5c6fedd4c87bee01cd7a528a30145521f8e0feff"
   integrity sha512-KrPd3PKaCLr78MalgiwJnA25Nm8HAmdwN3mYUYZgG/wizIo9EainNVQI9/yDavtVFRN2h3k8uf3GLHuhDMgEHg==
@@ -3724,7 +3724,7 @@ vary@^1, vary@~1.1.2:
   resolved "https://registry.yarnpkg.com/vary/-/vary-1.1.2.tgz#2299f02c6ded30d4a5961b0b9f74524a18f634fc"
   integrity sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==
 
-viem@^2.7.13, viem@^2.8.18:
+viem@^2.8.18:
   version "2.8.18"
   resolved "https://registry.yarnpkg.com/viem/-/viem-2.8.18.tgz#ffb051bf80381ffefc98087a20c177b25463c9f4"
   integrity sha512-Kq3kwkKziJ8rQeLkmdbSLheHDnA+tx2EdLKLmQ3N4FVtjKYjBP9tPL1r+fI6KltVUM1TDOhIHOdslDSp57VMMg==
@@ -3746,7 +3746,7 @@ vite-plugin-node-polyfills@^0.21.0:
     "@rollup/plugin-inject" "^5.0.5"
     node-stdlib-browser "^1.2.0"
 
-vite@^5.1.4:
+vite@^5.2.4:
   version "5.2.4"
   resolved "https://registry.yarnpkg.com/vite/-/vite-5.2.4.tgz#cd4065f8ae2164bcd4fe04570066351fc5c62f72"
   integrity sha512-vjFghvHWidBTinu5TCymJk/lRHlR5ljqB83yugr0HA1xspUPdOZHqbqDLnZ8f9/jINrtFHTCYYyIUi+o+Q5iyg==
