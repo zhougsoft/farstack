@@ -1,12 +1,12 @@
-import '@farcaster/auth-kit/styles.css'
 import {
-  type AuthClientError,
-  type StatusAPIResponse,
   AuthKitProvider,
   SignInButton,
+  type AuthClientError,
+  type StatusAPIResponse,
 } from '@farcaster/auth-kit'
+import '@farcaster/auth-kit/styles.css'
 import Cookies from 'js-cookie'
-import { type JwtPayload, jwtDecode } from 'jwt-decode'
+import { jwtDecode, type JwtPayload } from 'jwt-decode'
 import { useEffect, useState } from 'react'
 
 const SERVER_URL = 'http://localhost:6969'
@@ -26,40 +26,41 @@ const App = () => {
     setActiveUser(payload.user)
   }, [])
 
-  const onSignIn = (statusAPIResponse: StatusAPIResponse) => {
+  const onSignIn = async (statusAPIResponse: StatusAPIResponse) => {
     if (!statusAPIResponse) {
       console.warn('missing statusAPIResponse from Farcaster')
       return
     }
 
-    fetch(`${SERVER_URL}/auth`, {
+    const opts = {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Origin: window.location.origin,
       },
       body: JSON.stringify(statusAPIResponse),
-    })
-      .then(res => res.json())
-      .then((data: any) => {
-        if (data.token) {
-          const payload: AuthJwtPayload = jwtDecode(data.token)
-          if (!payload || !payload.exp) {
-            console.warn('invalid json web token payload')
-            return
-          }
+    }
 
-          const nowInSeconds = Math.floor(Date.now() / 1000)
-          const expiresInDays = (payload.exp - nowInSeconds) / (60 * 60 * 24)
-          Cookies.set('token', data.token, { expires: expiresInDays })
-          setActiveUser(payload.user)
+    const data = await fetch(`${SERVER_URL}/auth`, opts).then(res => res.json())
 
-          console.log('authentication success')
-        } else {
-          console.warn('authentication unsuccessful:', data)
-          alert('server authentication failed; check console for details')
-        }
-      })
+    if (!data.token) {
+      console.warn('authentication unsuccessful:', data)
+      alert('server authentication failed; check console for details')
+      return
+    }
+
+    const payload: AuthJwtPayload = jwtDecode(data.token)
+    if (!payload || !payload.exp) {
+      console.warn('invalid json web token payload')
+      return
+    }
+
+    const nowInSeconds = Math.floor(Date.now() / 1000)
+    const expiresInDays = (payload.exp - nowInSeconds) / (60 * 60 * 24)
+    Cookies.set('token', data.token, { expires: expiresInDays })
+    setActiveUser(payload.user)
+
+    console.log('authentication success')
   }
 
   const onSignInError = (error: AuthClientError | undefined) => {
@@ -71,6 +72,25 @@ const App = () => {
     Cookies.remove('token')
     setActiveUser(null)
     console.log('signed out')
+  }
+
+  const onFetchMeClick = async () => {
+    const token = Cookies.get('token')
+    if (!token) {
+      console.warn('no user found; please sign in first')
+      return
+    }
+
+    const opts = {
+      method: 'GET',
+      headers: { Authorization: `Bearer ${token}` },
+    }
+
+    const result = await fetch(`${SERVER_URL}/me`, opts)
+      .then(res => res.json())
+      .catch(console.error)
+
+    console.log('/me', result)
   }
 
   return (
@@ -100,6 +120,12 @@ const App = () => {
               <strong>"Sign in"</strong> button, then scanning the QR code popup
             </p>
           )}
+          <button onClick={onFetchMeClick}>
+            fetch <strong>/me</strong>
+          </button>
+          <small>
+            <em> - response in console</em>
+          </small>
         </div>
       </main>
     </AuthKitProvider>

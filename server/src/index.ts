@@ -17,28 +17,84 @@ const app = express()
 app.use(express.json())
 app.use(cors())
 
-app.post('/auth', async (req, res) => {
-  if (!req.headers.origin) {
-    return res.status(400).json({ error: 'missing header: origin' })
-  }
+const authenticateToken = (req, res, next) => {
+  try {
+    const authHeader = req.headers['authorization']
+    if (!authHeader) {
+      return res.status(403).json({ error: 'missing authorization header' })
+    }
 
-  const { host } = new URL(req.headers.origin)
-  const statusAPIResponse = req.body as StatusAPIResponse
+    if (!authHeader.startsWith('Bearer ')) {
+      return res.status(403).json({
+        error:
+          "invalid authorization header; expected format: 'Authorization: Bearer [TOKEN]'",
+      })
+    }
 
-  const signatureIsValid = await validateFarcasterSignature(
-    farcasterClient,
-    host,
-    statusAPIResponse
-  )
+    const token = authHeader && authHeader.split(' ')[1] // Authorization: Bearer [TOKEN]
+    if (!token) {
+      return res.status(403).json({ error: 'missing authorization token' })
+    }
 
-  if (signatureIsValid) {
-    const token = jwt.sign({ user: statusAPIResponse }, JWT_SECRET, {
-      expiresIn: '1d',
+    jwt.verify(token, JWT_SECRET, (error, payload) => {
+      if (error) {
+        return res.status(403).json({ error: 'token is invalid or expired' })
+      }
+
+      // ~~ add any req'd user validation here ~~
+      if (!payload.user) {
+        return res.status(401).json({ error: 'invalid user data' })
+      }
+
+      // attach user payload to the request & proceed on
+      req.user = payload.user
+      next()
     })
+  } catch (error) {
+    console.error('auth middleware error:', error)
+    return res.status(500).json({ error: 'internal server error' })
+  }
+}
 
+app.post('/auth', async (req, res) => {
+  try {
+    if (!req.headers.origin) {
+      return res.status(400).json({ error: 'missing header: origin' })
+    }
+
+    const { host } = new URL(req.headers.origin)
+    const statusAPIResponse = req.body as StatusAPIResponse
+    const signatureIsValid = await validateFarcasterSignature(
+      farcasterClient,
+      host,
+      statusAPIResponse
+    )
+
+    if (!signatureIsValid) {
+      return res.status(401).json({ error: 'invalid signature' })
+    }
+
+    const payload = { user: statusAPIResponse }
+    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' })
     res.json({ token })
-  } else {
-    res.status(401).json({ error: 'invalid signature' })
+  } catch (error) {
+    console.error('/auth error:', error)
+    return res.status(500).json({ error: 'internal server error' })
+  }
+})
+
+app.get('/me', authenticateToken, (req, res) => {
+  try {
+    if (!req.user) {
+      const msg = 'missing `user` after auth middleware; this should not happen'
+      console.warn(msg)
+      return res.status(401).end()
+    }
+
+    res.json(req.user)
+  } catch (error) {
+    console.error('/me error:', error)
+    return res.status(500).json({ error: 'internal server error' })
   }
 })
 
