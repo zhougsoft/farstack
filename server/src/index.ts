@@ -4,6 +4,7 @@ import {
   type StatusAPIResponse,
 } from '@farcaster/auth-client'
 import cors from 'cors'
+import dotenv from 'dotenv'
 import express, {
   type NextFunction,
   type Request,
@@ -12,8 +13,11 @@ import express, {
 import jwt, { type VerifyErrors } from 'jsonwebtoken'
 import { validateFarcasterSignature } from './lib'
 
-const JWT_SECRET = 'use_an_env_var_for_this'
 const PORT = 6969
+
+dotenv.config()
+const { JWT_SECRET } = process.env
+if (!JWT_SECRET) throw new Error('missing JWT_SECRET in .env file')
 
 const farcasterClient = createAppClient({ ethereum: viemConnector() })
 
