@@ -1,0 +1,16 @@
+{
+  "name": "farstack",
+  "version": "0.0.0",
+  "description": "...",
+  "license": "MIT",
+  "type": "module",
+  "private": true,
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "scripts": {
+    "client": "yarn workspace client dev",
+    "server": "yarn workspace server dev"
+  }
+}
