@@ -4,8 +4,12 @@ import {
   type StatusAPIResponse,
 } from '@farcaster/auth-client'
 import cors from 'cors'
-import express from 'express'
-import jwt from 'jsonwebtoken'
+import express, {
+  type NextFunction,
+  type Request,
+  type Response,
+} from 'express'
+import jwt, { type VerifyErrors } from 'jsonwebtoken'
 import { validateFarcasterSignature } from './lib'
 
 const JWT_SECRET = 'use_an_env_var_for_this'
@@ -17,7 +21,7 @@ const app = express()
 app.use(express.json())
 app.use(cors())
 
-const authenticateToken = (req, res, next) => {
+const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
   try {
     const authHeader = req.headers['authorization']
     if (!authHeader) {
@@ -36,14 +40,14 @@ const authenticateToken = (req, res, next) => {
       return res.status(403).json({ error: 'missing authorization token' })
     }
 
-    jwt.verify(token, JWT_SECRET, (error, payload) => {
+    jwt.verify(token, JWT_SECRET, (error: VerifyErrors, payload: Request) => {
       if (error) {
         return res.status(403).json({ error: 'token is invalid or expired' })
       }
 
       // ~~ add any req'd user validation here ~~
       if (!payload.user) {
-        return res.status(401).json({ error: 'invalid user data' })
+        return res.status(401).json({ error: 'invalid user' })
       }
 
       // attach user payload to the request & proceed on
@@ -86,9 +90,10 @@ app.post('/auth', async (req, res) => {
 app.get('/me', authenticateToken, (req, res) => {
   try {
     if (!req.user) {
-      const msg = 'missing `user` after auth middleware; this should not happen'
-      console.warn(msg)
-      return res.status(401).end()
+      const msg =
+        'missing `req.user` after auth middleware; this should not happen'
+      console.error(msg)
+      return res.status(500).json({ error: 'internal server error' })
     }
 
     res.json(req.user)
