@@ -1,6 +1,6 @@
-# farstack
+# 🟪 farstack
 
-- basic node/express/react starter
+- basic node/express/socket.io/react starter with farcaster authentication
 - uses the [Farcaster AuthKit](https://docs.farcaster.xyz/auth-kit/introduction) for logging in w/ farcaster
 
 ### requirements

@@ -5,10 +5,16 @@ import {
 } from '@farcaster/auth-client'
 import cors from 'cors'
 import dotenv from 'dotenv'
-import express from 'express'
+import express, { type Request, type Response } from 'express'
+import { createServer } from 'http'
 import jwt from 'jsonwebtoken'
+import { Server } from 'socket.io'
 import { validateFarcasterSignature } from './lib'
-import { authenticateToken } from './middleware'
+import {
+  authenticateTokenExpress,
+  authenticateTokenSocketIO,
+} from './middleware'
+import type { AuthenticatedRequest, AuthenticatedSocket } from './types'
 
 dotenv.config()
 const { PORT, JWT_SECRET } = process.env
@@ -21,7 +27,32 @@ const app = express()
 app.use(express.json())
 app.use(cors())
 
-app.post('/auth', async (req, res) => {
+const server = createServer(app)
+const io = new Server(server, {
+  cors: {
+    origin: '*', // allow all origins for now, but should be more restrictive in production
+    methods: ['GET', 'POST'],
+  },
+})
+
+io.use((socket: AuthenticatedSocket, next) => {
+  if (socket.handshake !== undefined) {
+    authenticateTokenSocketIO(socket, next)
+  } else {
+    next()
+  }
+})
+
+io.on('connection', (socket: AuthenticatedSocket) => {
+  console.log(`fid #${socket.user.fid} connected`)
+
+  socket.on('bing', data => {
+    console.log('bing', data)
+    socket.emit('bong', { data: `ping recieved from fid #${socket.user.fid}` })
+  })
+})
+
+app.post('/auth', async (req: Request, res: Response) => {
   try {
     if (!req.headers.origin) {
       return res.status(400).json({ error: 'missing header: origin' })
@@ -48,22 +79,26 @@ app.post('/auth', async (req, res) => {
   }
 })
 
-app.get('/me', authenticateToken, (req, res) => {
-  try {
-    if (!req.user) {
-      const msg =
-        'missing `req.user` after auth middleware; this should not happen'
-      console.error(msg)
+app.get(
+  '/me',
+  authenticateTokenExpress,
+  (req: AuthenticatedRequest, res: Response) => {
+    try {
+      if (!req.user) {
+        const msg =
+          'missing `req.user` after auth middleware; this should not happen'
+        console.error(msg)
+        return res.status(500).json({ error: 'internal server error' })
+      }
+
+      res.json(req.user)
+    } catch (error) {
+      console.error('/me error:', error)
       return res.status(500).json({ error: 'internal server error' })
     }
-
-    res.json(req.user)
-  } catch (error) {
-    console.error('/me error:', error)
-    return res.status(500).json({ error: 'internal server error' })
   }
-})
+)
 
-app.listen(PORT, () => {
-  console.log(`server listening on port ${PORT}`)
+server.listen(PORT, () => {
+  console.log(`\nserver listening on port ${PORT}`)
 })
